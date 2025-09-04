@@ -67,9 +67,9 @@ function playRandomMainVideo() {
   video.loop = false;
   video.muted = false; // スタート操作なので音声ON
 
-  if (video.requestFullscreen) {
-    video.requestFullscreen();
-  }
+  // if (video.requestFullscreen) {
+  //   video.requestFullscreen();
+  // }
 
   video.play();
   button.style.visibility = 'hidden';
