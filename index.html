@@ -31,7 +31,6 @@
 </head>
 <body>
 
-<!-- 待機用動画（ループ再生される） -->
 <video id="video" autoplay muted loop>
   <source src="intro.mp4" type="video/mp4">
 </video>
@@ -41,20 +40,18 @@
 const video = document.getElementById('video');
 const button = document.getElementById('startButton');
 
-// 🎲 本編動画（ローカルファイル名）
 const mainVideos = [
-  "videos/video1.mp4",
-  "videos/video2.mp4",
-  "videos/video3.mp4",
-  "videos/video4.mp4",
-  "videos/video5.mp4",
-  "videos/video6.mp4",
-  "videos/video7.mp4",
-  "videos/video8.mp4",
-  "videos/video9.mp4"
+  "video1.mp4",
+  "video2.mp4",
+  "video3.mp4",
+  "video4.mp4",
+  "video5.mp4",
+  "video6.mp4",
+  "video7.mp4",
+  "video8.mp4",
+  "video9.mp4"
 ];
 
-// 待機用動画
 const introVideo = "intro.mp4";
 
 button.addEventListener('click', () => {
@@ -63,30 +60,36 @@ button.addEventListener('click', () => {
 
 function playRandomMainVideo() {
   const index = Math.floor(Math.random() * mainVideos.length);
-  video.src = mainVideos[index];
-  video.loop = false;
-  video.muted = false; // スタート操作なので音声ON
+  const selectedVideo = mainVideos[index];
 
-  // if (video.requestFullscreen) {
-  //   video.requestFullscreen();
-  // }
-
-  video.play();
-  button.style.visibility = 'hidden';
-
-  video.addEventListener('ended', handleEnded, { once: true });
+  // 読み込みエラーチェック
+  fetch(selectedVideo, { method: 'HEAD' })
+    .then(response => {
+      if (!response.ok) throw new Error('動画ファイルが見つかりません: ' + selectedVideo);
+      video.src = selectedVideo;
+      video.loop = false;
+      video.muted = false;
+      video.play().catch(err => console.error('再生エラー:', err));
+      button.style.visibility = 'hidden';
+      video.addEventListener('ended', handleEnded, { once: true });
+    })
+    .catch(err => {
+      console.error(err);
+      alert('動画の読み込みに失敗しました: ' + selectedVideo);
+      // イントロに戻す
+      resetToIntro();
+    });
 }
 
 function handleEnded() {
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  }
+  resetToIntro();
+}
 
+function resetToIntro() {
   video.src = introVideo;
   video.loop = true;
-  video.muted = true; // 自動再生のため無音
-  video.play();
-
+  video.muted = true;
+  video.play().catch(err => console.error('イントロ再生エラー:', err));
   button.style.visibility = 'visible';
 }
 </script>
