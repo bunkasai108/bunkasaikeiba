@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ランダム動画再生</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    #startButton {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 15px 30px;
+      font-size: 20px;
+      z-index: 10;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 待機用動画（ループ再生される） -->
+<video id="video" autoplay muted loop>
+  <source src="intro.mp4" type="video/mp4">
+</video>
+<button id="startButton">スタート</button>
+
+<script>
+const video = document.getElementById('video');
+const button = document.getElementById('startButton');
+
+// 🎲 本編動画（ローカルファイル名）
+const mainVideos = [
+  "race1.mp4",
+  "race2.mp4",
+  "race3.mp4",
+  "race4.mp4",
+  "race5.mp4",
+  "race6.mp4",
+  "race7.mp4",
+  "race8.mp4",
+  "race9.mp4"
+];
+
+// 待機用動画
+const introVideo = "intro.mp4";
+
+button.addEventListener('click', () => {
+  playRandomMainVideo();
+});
+
+function playRandomMainVideo() {
+  const index = Math.floor(Math.random() * mainVideos.length);
+  video.src = mainVideos[index];
+  video.loop = false;
+  video.muted = false; // スタート操作なので音声ON
+
+  if (video.requestFullscreen) {
+    video.requestFullscreen();
+  }
+
+  video.play();
+  button.style.visibility = 'hidden';
+
+  video.addEventListener('ended', handleEnded, { once: true });
+}
+
+function handleEnded() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+
+  video.src = introVideo;
+  video.loop = true;
+  video.muted = true; // 自動再生のため無音
+  video.play();
+
+  button.style.visibility = 'visible';
+}
+</script>
+
+</body>
+</html>
